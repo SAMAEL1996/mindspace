@@ -4,84 +4,51 @@
 
 @section('content')
 <div class="content p-5">
-    <div class="w-50">
-        <div class="row pb-5">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>QTY</th>
-                        <th>ITEM</th>
-                        <th>ACTION</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="row pb-2">
-            <input type="date" class="form-control w-50 mx-auto">
-        </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-dark w-100" data-item="Whole Day Pass" data-value="500">Whole Day Pass</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-dark w-100" data-item="Whole Day Pass(Student)" data-value="400">Whole Day Pass (Student)</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-dark w-100" data-item="Monthly Pass" data-value="3000">Monthly Pass</a>
+    <div class="row">
+        <div class="col-md-6">
+            @php $count = 0 @endphp
+
+            <div class="row pb-2">
+                @foreach($items as $item)
+                    <div class="col-lg-4">
+                        <a class="btn btn-lg btn-outline-dark w-100 store-item" data-item="{{ $item->name }}" data-value="{{ $item->amount }}" data-id="{{ $item->id }}">{{ $item->name }}</a>
+                    </div>
+
+                    @php $count++ @endphp
+
+                    @if($count % 3 == 0)
+                        </div><div class="row pb-2">
+                    @endif
+                @endforeach
             </div>
         </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="8-Hour Pass" data-value="400">8-Hour Pass</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="5-Hour Pass" data-value="300">5-Hour Pass</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="1-Hour Pass" data-value="75">1-Hour Pass</a>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="8-Hour Pass(Student)" data-value="320">8-Hour Pass<br>(Student)</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="5-Hour Pass(Student)" data-value="240">5-Hour Pass<br>(Student)</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-primary w-100" data-item="1-Hour Pass(Student)" data-value="60">1-Hour Pass<br>(Student)</a>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Strawberries and Cream" data-value="75">Strawberries and Cream</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Matcha Latte" data-value="75">Matcha Latte</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Spanish Latte" data-value="55">Spanish Latte</a>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Caramel Latte" data-value="65">Caramel Latte</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="White Mocha Latte" data-value="65">White Mocha Latte</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Vanilla Latte" data-value="55">Vanilla Latte</a>
-            </div>
-        </div>
-        <div class="row pb-2">
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Cafe Latte" data-value="45">Cafe Latte</a>
-            </div>
-            <div class="col-lg-4">
-                <a class="btn btn-lg btn-outline-secondary w-100" data-item="Mocha Latte" data-value="55">Mocha Latte</a>
-            </div>
-            <div class="col-lg-4"></div>
+        <div class="col-md-6">
+            <form action="{{ route('sales.store') }}" method="post">
+                @csrf
+
+                <div class="row pb-2">
+                    <input type="date" name="date" id="date" class="form-control w-50 mx-auto">
+                </div>
+
+                <div class="row pb-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>QTY</th>
+                                <th>ITEM</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="row-items">
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row pb-5">
+                    <button class="btn btn-outline-success btn-lg w-25 mx-auto" type="submit">SAVE</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -90,7 +57,22 @@
 @push('scripts_after')
 <script>
     $(document).ready(function() {
-        console.log(true);
+        var index = 0;
+        $('.store-item').on('click', function() {
+            var dataItem = $(this).data("item");
+            var dataValue = $(this).data("value");
+            var dataId = $(this).data("id");
+
+            index += 1;
+            
+            var newRow = "<tr><td>" + dataItem + "</td><td>" + dataValue + "</td><td><input type='hidden' name='items["+dataId+"][]' value='"+index+"'>"+
+                "<button class='btn btn-danger btn-sm delete-row'>Delete</button></td></tr>";
+            $("#row-items").append(newRow);
+        });
+
+        $('#row-items').on('click', '.delete-row', function() {
+            $(this).closest('tr').remove();
+        });
     });
 </script>
 @endpush

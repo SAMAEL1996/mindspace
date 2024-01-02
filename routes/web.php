@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    dd(storage_path('credentials.json'));
     return view('welcome');
 });
 
-Route::get('/sales', 'SalesController@index')->name('sales.index');
+Route::get('/sales', 'SalesController@create')->name('sales.create');
+Route::post('/sales', 'SalesController@store')->name('sales.store');
