@@ -38,4 +38,8 @@ class SalesController extends Controller
 
         return redirect()->route('sales.index');
     }
+
+    public function customer() {
+        return view('customer');
+    }
 }

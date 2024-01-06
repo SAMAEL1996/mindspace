@@ -12,4 +12,8 @@ class Item extends Model
     public function sales() {
         return $this->hasMany(\App\Models\Sale::class);
     }
+
+    public function customer() {
+        return $this->hasOne(\App\Models\Customer::class);
+    }
 }

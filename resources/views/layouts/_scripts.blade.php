@@ -1,5 +1,7 @@
 @stack('scripts_before')
 
+@livewireScripts
+
 <!-- OneUI Core JS -->
 <script src="{{ asset('js/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>  
 <script src="{{ asset('js/plugins/es6-promise/es6-promise.auto.min.js') }}"></script>
